@@ -1,14 +1,7 @@
 {
 	"name": "demps-dev",	
-    "dockerComposeFile": "docker-compose.yml"
+    "dockerComposeFile": "docker-compose.yml",
     "service": "simulator",
-	//"image":"gastudil/demps:01.04-devs-vscode",
-	//"runArgs": [
-	//	"--init",
-    //    "--rm",
-	//	"--hostname", "demps-dev",
-	//	"-p", "8080:80",         
-	//],
 	"remoteUser": "demps-user",
     
 	// Permite sobrescribir el ENTRYPOINT

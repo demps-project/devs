@@ -1,4 +1,8 @@
 .DS*
+demps
+**/objs
+**/output
+
 
 # Prerequisites
 *.d

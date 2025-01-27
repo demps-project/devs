@@ -1,0 +1,59 @@
+{
+	"name": "demps-dev",	
+    "dockerComposeFile": "docker-compose.yml"
+    "service": "simulator",
+	//"image":"gastudil/demps:01.04-devs-vscode",
+	//"runArgs": [
+	//	"--init",
+    //    "--rm",
+	//	"--hostname", "demps-dev",
+	//	"-p", "8080:80",         
+	//],
+	"remoteUser": "demps-user",
+    
+	// Permite sobrescribir el ENTRYPOINT
+	"overrideCommand": false, 
+	"command": "/bin/sh -c '/usr/bin/supervisord -c /etc/supervisord.conf'",
+  
+	//"workspaceMount": "source=${localWorkspaceFolder},target=/home/demps-user/workspace/${localWorkspaceFolderBasename},type=bind,consistency=consistent",
+	"workspaceFolder": "/home/demps-user/workspace",
+
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [80],
+	"portsAttributes": {
+	    "80": {
+	      "label": "Apache web server"
+	    }
+	},
+	
+	"customizations": {
+	        "vscode": {
+				"settings": {
+					"editor.tabSize": 4,
+					"editor.insertSpaces": true,
+					"problems.visibility": false,
+					"doxygen_runner.view_after_generate": false
+				},
+				"extensions": [
+					// Incluidas en la imagen					
+					"ms-python.python",
+					//"ms-toolsai.jupyter",
+					"ms-vscode.cpptools-extension-pack",
+					"lfm.vscode-makefile-term",
+					"ms-vscode.makefile-tools",
+					"hnw.vscode-auto-open-markdown-preview",
+					"ms-toolsai.datawrangler",
+					"jebbs.plantuml",
+					"bbenoist.Doxygen",
+					"cschlosser.doxdocgen",
+					"betwo.vscode-doxygen-runner",
+					//"hediet.vscode-drawio"
+					// Incluya las extensiones sus extensiones a continuacion
+				]
+	        }
+	}
+}
+

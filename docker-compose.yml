@@ -1,0 +1,25 @@
+services:
+  simulator:
+    image: gastudil/demps:01.04-devs-vscode
+    hostname: demps-devs
+    ports:
+      - 8000:80
+    volumes:
+         - .:/home/demps-user/workspace
+    #volumes:
+      #- ./planet.openstreetmap.org:/home/demps-user/planet.openstreetmap.org
+      #- ./sim:/home/demps-user/sim
+      #- ./conf.d:/usr/local/etc/demps/conf.d
+      #- ./logs:/var/log/demps
+    networks:
+      - back_net
+      
+  oes:
+    image: gastudil/oes:01.00 
+    hostname: oes
+    command: ["python3","/home/oes/openElevationServer.py","--port", "10666"]
+    networks:
+      - back_net
+      
+networks:
+  back_net:

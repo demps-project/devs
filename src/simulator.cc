@@ -1,8 +1,5 @@
 #include <simulator.hh>
 
-
-
-
 std::mutex Simulator::_execForMTX;
 bool Simulator::_simInExec;
 
@@ -109,7 +106,6 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 		*global::serverLog  << "Path to debris directory:\n\t " << _debrisFilePath << "\n\tno exist. Creating." << std::endl;
 		std::filesystem::create_directories( _debrisFilePath );
 	}
-	
 	
 	_statsOut        = _fsettings["output"]["stats-out"].get<bool>();
 	_statsInterval   = (uint32_t)(_fsettings["output"]["stats-interval"].get<uint32_t>() /  global::params.deltaT);

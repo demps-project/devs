@@ -9,7 +9,8 @@
 	"command": "/bin/sh -c '/usr/bin/supervisord -c /etc/supervisord.conf'",
   
 	//"workspaceMount": "source=${localWorkspaceFolder},target=/home/demps-user/workspace/${localWorkspaceFolderBasename},type=bind,consistency=consistent",
-	"workspaceFolder": "/home/demps-user/workspace",
+	//"workspaceFolder": "/home/demps-user/workspace",
+    "workspaceFolder": "/home/demps-user",
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
@@ -25,6 +26,19 @@
 	"customizations": {
 	        "vscode": {
 				"settings": {
+                    "files.exclude": {
+                        "**/.ipy*": true,
+                        "**/.Trash*": true,
+                        "**/.DS_*": true,
+                       " **/objs": true,
+                       " **/output": true,
+                        "**/.cache": true,
+                       " **/.dotnet": true,
+                        "**/.vscode*": true,
+                        "**/.ssh": true,
+                        ".gitconfig": true,
+                       " **/supervisord.pid": true
+                    },
 					"editor.tabSize": 4,
 					"editor.insertSpaces": true,
 					"problems.visibility": false,

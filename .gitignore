@@ -8,6 +8,8 @@ demps
 **/.ssh
 .gitconfig
 **/supervisord.pid
+.devcontainer.json
+.gitconfig
 
 
 

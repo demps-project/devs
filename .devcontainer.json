@@ -9,8 +9,7 @@
 	"command": "/bin/sh -c '/usr/bin/supervisord -c /etc/supervisord.conf'",
   
 	//"workspaceMount": "source=${localWorkspaceFolder},target=/home/demps-user/workspace/${localWorkspaceFolderBasename},type=bind,consistency=consistent",
-	//"workspaceFolder": "/home/demps-user/workspace",
-    "workspaceFolder": "/home/demps-user",
+	"workspaceFolder": "/home/demps-user/workspace",
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},

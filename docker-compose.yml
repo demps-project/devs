@@ -6,8 +6,7 @@ services:
     ports:
       - 8000:80
     volumes:
-         #- .:/home/demps-user/workspace
-         - .:/home/demps-user
+         - .:/home/demps-user/workspace
     #volumes:
       #- ./planet.openstreetmap.org:/home/demps-user/planet.openstreetmap.org
       #- ./sim:/home/demps-user/sim

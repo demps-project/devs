@@ -2,6 +2,9 @@
 demps
 **/objs
 **/output
+**/.cache
+**/.dotnet
+**/.vscode*
 
 
 # Prerequisites

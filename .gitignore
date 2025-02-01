@@ -10,6 +10,7 @@ demps
 **/supervisord.pid
 .devcontainer.json
 .gitconfig
+.bash_history
 
 
 

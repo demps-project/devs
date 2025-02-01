@@ -5,6 +5,10 @@ demps
 **/.cache
 **/.dotnet
 **/.vscode*
+**/.ssh
+.gitconfig
+**/supervisord.pid
+
 
 
 # Prerequisites

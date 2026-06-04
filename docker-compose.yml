@@ -1,6 +1,7 @@
 services:
   simulator:
-    image: gastudil/demps:01.04-devs-vscode
+    image: gastudil/demps:02.00-devs-base
+    platform: linux/amd64 
     hostname: demps-devs
     container_name: simulator
     ports:
@@ -17,7 +18,8 @@ services:
       - back_net
       
   oes:
-    image: gastudil/oes:01.00 
+    image: gastudil/oes:01.00
+    platform: linux/amd64 
     hostname: oes
     container_name: oes
     command: ["python3","/home/oes/openElevationServer.py","--port", "10666"]

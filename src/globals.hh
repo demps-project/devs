@@ -171,7 +171,7 @@ namespace global{
 		} snitchServer;
 
 		struct ElevationServer_s {
-			std::string URL      = "http://127.0.0.1:64000";
+			std::string URL      = "http://oes:10666";
 			std::string coorTest = "-33.144995,-71.568655";
 		} elevationServer;
 	};

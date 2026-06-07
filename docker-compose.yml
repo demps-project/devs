@@ -1,6 +1,6 @@
 services:
   simulator:
-    image: gastudil/demps:02.00-devs-base
+    image: gastudil/demps:02.00-devs-latest
     platform: linux/amd64 
     hostname: demps-devs
     container_name: simulator

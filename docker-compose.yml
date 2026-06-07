@@ -8,6 +8,7 @@ services:
       - 8000:80
     volumes:
          - .:/home/demps-user/workspace
+         - ./sim:/home/demps-user/workspace/sim
          #- .:/home/demps-user
     #volumes:
       #- ./planet.openstreetmap.org:/home/demps-user/planet.openstreetmap.org
@@ -31,8 +32,16 @@ services:
     platform: linux/amd64 
     hostname: gaiamaps
     container_name: gaiamaps
+    volumes:
+      - ./sim:/sim
+    depends_on:
+      - simulator
     networks:
       - back_net
       
 networks:
   back_net:
+      
+volumes:
+  export_data:
+    

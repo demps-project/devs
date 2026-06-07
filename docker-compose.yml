@@ -25,6 +25,14 @@ services:
     command: ["python3","/home/oes/openElevationServer.py","--port", "10666"]
     networks:
       - back_net
+
+  gaiamaps:
+    image: gastudil/gaiamaps:02.00-production-latest
+    platform: linux/amd64 
+    hostname: gaiamaps
+    container_name: gaiamaps
+    networks:
+      - back_net
       
 networks:
   back_net:

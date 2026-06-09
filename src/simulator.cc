@@ -310,12 +310,22 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 			*global::serverLog  << "\tAsignando patch agentes monitores en línea geográfica: " << nameID << "\n"; 
 			_env->addLineMonitorZone(feature);
 		}
-		else if(zoneType == "\tpointMonitor"){
-			*global::serverLog  << "Asignando patch agentes monitores en punto geográfico: " << nameID << "\n"; 
+		else if(zoneType == "pointMonitor"){
+			*global::serverLog  << "\tAsignando patch agentes monitores en punto geográfico: " << nameID << "\n"; 
 			_env->addPointMonitorZone(feature);
+		}
+		else if(zoneType == "building"){
+			*global::serverLog  << "\tEdificio encontrado: " << nameID << "\n"; 
+			//_env->addPointMonitorZone(feature);
+		}
+		else if(zoneType == "debris"){
+			*global::serverLog  << "\tZona de escombros encontrado: " << nameID << "\n"; 
+			//_env->addPointMonitorZone(feature);
 		}
 	}
 	*global::serverLog  << std::endl;
+
+	exit(0);
 	
 	////////////////////////////////////////////
 	// Si no hay zonas inundables definidas,

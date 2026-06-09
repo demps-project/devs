@@ -22,12 +22,7 @@ clean:
 	@rm -rf *~ core
 
 install:
-	@cd $(SRC) && $(MAKE) install
-	@echo \#\#\# Creating symbolic link to \'sim\', \'planet.openstreetmap.org\' and \'open.elevation.server\' in $(HOME)
-	@rm -f $(HOME)/$(SIM_DIR)
-	#@rm -f $(HOME)/$(PLANET_DIR)
-	@ln -s $(PWD)/$(SIM_DIR) $(HOME)/$(SIM_DIR)
-	@ln -s $(PWD)/$(PLANET_DIR) $(HOME)/$(PLANET_DIR)
+	@cd $(SRC) && $(MAKE) install	
 
 	@echo \#\#\# Apply chmod +x to src_py/*.py
 	@chmod +x $(SRC_PY)/*.py

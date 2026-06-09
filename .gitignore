@@ -6,6 +6,7 @@ demps
 **/.dotnet
 **/.vscode*
 **/.ssh
+**/test
 .gitconfig
 **/supervisord.pid
 .devcontainer.json

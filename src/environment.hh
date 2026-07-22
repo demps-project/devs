@@ -28,6 +28,9 @@ private:
 	std::vector<Zone> _reference_zones;
 	std::vector<Zone> _flood_zones;
 
+	std::vector<Zone> _building_zones;
+	std::vector<Zone> _debris_zones;
+
 	std::vector<Agent*> _vAgents;
 	std::vector<PatchAgent*> _pAgents;
 	std::vector<PatchAgent*> _pAgentsInCity;
@@ -107,6 +110,9 @@ public:
 	
 	void addLineMonitorZone(const json& lineMonitor_feature);
 	void addPointMonitorZone(const json& pointMonitor_feature);
+
+	void addDebrisZone(const json& debrisZone_feature);
+	void addBuildZone(const json& buildZone_feature);
 	
 	void setReferencePoint(const json& fmap_zone);
 	Point2D getReferencePoint();
@@ -137,6 +143,9 @@ public:
 	Zone& getFloodZone(uint32_t id);
 	std::vector<Zone>& getFloodZones();
 	void orderFloodZones();
+
+	std::vector<Zone>& getDebrisZones();
+	std::vector<Zone>& getBuildingZones();
 	
 	
 	json getZonesInfo();
@@ -184,6 +193,7 @@ public:
 	void adjustAgentsInitialPosition(const uint32_t& calibrationTime);
 	
 	void determinatePAgentsInStreets();
+	void determinatePAgentsWithDebris(int& pAgentsWithDebris);
 	void determinatePAgentsWithDebris(double debrisRatio, int& pAgentsWithDebris);
 	void adjustAgentsRules();
 	void setSafeZoneAttribAgent(Agent* agent);

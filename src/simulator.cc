@@ -274,7 +274,7 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 	for(size_t y = 0; y < gridData._quadY; y++) {
 		for(size_t x = 0; x < gridData._quadX; x++) {
 			uint32_t idPatch = x + y * gridData._quadX;
-			//std::cout << idPatch << std::endl;
+			//*global::serverLog << "idPatch: " << idPatch << std::endl;
 			_env->addPatchAgent( new PatchAgent(idPatch) );
 			
 		}
@@ -316,16 +316,46 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 		}
 		else if(zoneType == "building"){
 			*global::serverLog  << "\tEdificio encontrado: " << nameID << "\n"; 
-			//_env->addPointMonitorZone(feature);
+			_env->addBuildZone(feature);
 		}
 		else if(zoneType == "debris"){
 			*global::serverLog  << "\tZona de escombros encontrado: " << nameID << "\n"; 
-			//_env->addPointMonitorZone(feature);
+			_env->addDebrisZone(feature);
 		}
 	}
 	*global::serverLog  << std::endl;
 
-	exit(0);
+	////////////////////////////////////////////
+	//  Si hay zonas de escombros definidas
+	if(_env->getDebrisZones().size() > 0){
+		*global::serverLog << "-----------Config Debris Zones----------" << std::endl;;
+		for(auto &dZone : _env->getDebrisZones()){
+			for(int idx=0; idx < 1000; idx++){
+				Point2D fooPoint =  dZone.generate();
+				uint32_t idPatch = _env->getQuadId(fooPoint);
+				
+				//uint32_t x = fooPoint[0];
+				//uint32_t y = fooPoint[1];
+				//*global::serverLog << "x: " << x << ", y: " << y << " ==> idPatch: " << idPatch << std::endl;
+
+				PatchAgent* pAgent = _env->getPatchAgent(idPatch);
+
+				pAgent->setProbDebris(1.0);
+				pAgent->isDebrisFree(false);
+			}
+		}
+
+		/*for(auto &fooZone : _env->getDebrisZones()) {
+			*global::serverLog << std::setprecision(_filesimPrecision);
+			*global::serverLog << "ZONA " << fooZone.getNameID() << "\n" ;
+			*global::serverLog << "Area: " <<fooZone.getArea() << "\n" ;
+			*global::serverLog << "\t\tcentroidWGS84:" << fooZone.getCentroidWGS84() << "\n";
+			*global::serverLog << "\t\tXYminWGS84:" << fooZone.getXYminWGS84() << "\n";
+			*global::serverLog << "\t\tXYmaxWGS84:" << fooZone.getXYmaxWGS84() << "\n";
+			*global::serverLog << "\t\tcentroid:" << fooZone.getCentroid() <<  std::endl;
+		}*/
+		
+	}
 	
 	////////////////////////////////////////////
 	// Si no hay zonas inundables definidas,
@@ -547,9 +577,11 @@ void Simulator::calibrate(void)
 	//
 	if(global::params.modelsEnable.debris){
 		int pAgentsWithDebris;
-		double debrisRatio = _fsettings["debrisParams"]["debrisRatio"].get<double>()/100.0;
+		
 		*global::serverLog  << "Determinando patch agents que contienen escombros...\n";
-		_env->determinatePAgentsWithDebris(debrisRatio, pAgentsWithDebris);
+		//double debrisRatio = _fsettings["debrisParams"]["debrisRatio"].get<double>()/100.0;
+		//_env->determinatePAgentsWithDebris(debrisRatio, pAgentsWithDebris);
+		_env->determinatePAgentsWithDebris(pAgentsWithDebris);
 
 		*global::serverLog  << "Patch Agents in streets : "<<  _env->getPatchAgentsInStreets().size() << "\n";
 		*global::serverLog  << "Patch Agents in streets with debris : "<<  pAgentsWithDebris << " ";

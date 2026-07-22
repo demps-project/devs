@@ -73,7 +73,9 @@ void Environment::setReferencePoint(const json& fmap_zone)
 		//std::cout << feature.dump(4) << std::endl;
 		if(feature["properties"]["zoneType"] == "initial" || 
 		   feature["properties"]["zoneType"] == "safe"    ||
-		   feature["properties"]["zoneType"] == "flood" ){
+		   feature["properties"]["zoneType"] == "flood"   ||
+		   feature["properties"]["zoneType"] == "building"   ||
+		   feature["properties"]["zoneType"] == "debris"   ){
 			for(auto& point : feature["geometry"]["coordinates"][0]){
 				map_x.push_back( point[1] );
 				map_y.push_back( point[0] );
@@ -279,6 +281,14 @@ void Environment::addPointMonitorZone(const json& pointMonitor_feature)
 	
 }
 
+void Environment::addDebrisZone(const json& debrisZone_feature){
+	_debris_zones.push_back(Zone(debrisZone_feature));
+}
+
+void Environment::addBuildZone(const json& buildZone_feature){
+	_building_zones.push_back(Zone(buildZone_feature));
+}
+
 /**
 * @brief Crea los cuadrantes del mapa de la simulación
 *
@@ -308,8 +318,8 @@ void Environment::setGrid(const json &fmap_zone, uint32_t offset, uint32_t quadS
 	// Caso general: múltiples features
 	for(auto& feature : fmap_zone["features"]) {
 		//std::cout << feature.dump(4) << std::endl;
-		if(feature["properties"]["zoneType"] == "initial" || feature["properties"]["zoneType"] == "safe"/* ||
-		   feature["properties"]["zoneType"] == "flood" */){
+		if(feature["properties"]["zoneType"] == "initial" || feature["properties"]["zoneType"] == "safe" ||
+		   feature["properties"]["zoneType"] == "debris"  || feature["properties"]["zoneType"] == "building" ){
 			for(auto& point : feature["geometry"]["coordinates"][0]){
 				double x,y,z;
 				this->getProjector().Forward(point[1],point[0],0,x,y,z);
@@ -613,6 +623,16 @@ void Environment::orderFloodZones()
 	
 }
 
+std::vector<Zone>& Environment::getDebrisZones()
+{
+	return(this->_debris_zones);
+}
+
+std::vector<Zone>& Environment::getBuildingZones()
+{
+	return(this->_building_zones);
+}
+
 ////////////////////////////////////////////////////////
 //
 /*
@@ -704,10 +724,10 @@ uint32_t Environment::getQuadId(Point2D position)
 	          (int)((posY - gridData._yMin) / gridData._quadSize) * gridData._quadX;
 	
 	if( quadId >= gridData._quadX * gridData._quadY ){
-		std::cout << std::endl;
-		std::cout << global::currTimeSim << "\t" << "****BUG****" << std::endl;
-		std::cout << "****quadId="<< quadId << std::endl;
-		std::cout << "****position="<< position << std::endl;
+		*global::serverLog << std::endl;
+		*global::serverLog << global::currTimeSim << "\t" << "****BUG****" << std::endl;
+		*global::serverLog << "****quadId="<< quadId << std::endl;
+		*global::serverLog << "****position="<< position << std::endl;
 	}
 
 	return(quadId);
@@ -1268,6 +1288,24 @@ void Environment::determinatePAgentsInStreets()
 		}
 	}
 	
+}
+
+void Environment::determinatePAgentsWithDebris(int& pAgentsWithDebris){
+	pAgentsWithDebris = 0; 
+	ProgressBar pg;
+	pg.start(this->getPatchAgentsInStreets().size()-1);
+
+	int i =0;
+	for(const auto& pAgent : this->getPatchAgentsInStreets()){
+		if(global::execOptions.showProgressBar) {
+			pg.update(i++);
+		}
+
+		if(!pAgent->isDebrisFree()){
+			pAgentsWithDebris++;
+		} 
+	}
+
 }
 
 void Environment::determinatePAgentsWithDebris(double debrisRatio, int& pAgentsWithDebris)

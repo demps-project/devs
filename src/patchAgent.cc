@@ -4,6 +4,9 @@
 
 std::shared_ptr<Environment> PatchAgent::_myEnv;
 
+PatchAgent::PatchAgent(){
+	
+}
 
 PatchAgent::PatchAgent(const uint32_t &id)
 {

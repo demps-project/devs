@@ -1140,7 +1140,8 @@ bool Environment::setDebrisVelocityOf(Agent* agent)
 	
 	bool seekNewRoute = false;
 	
-	if(curSpeed > 0){
+	if(curSpeed > 0)
+	{
 		// Obtener el patchId del agent
 		uint32_t patchId = agent->getQuad();
 		PatchAgent* pAgent = this->getPatchAgent(patchId);
@@ -1166,7 +1167,10 @@ bool Environment::setDebrisVelocityOf(Agent* agent)
 		if(reductionCoeff <= 0.20){
 			reductionCoeff = 0.20;
 			seekNewRoute = true;
-			
+
+			//*global::serverLog << "Patch ID: " << pAgent->getId() << ", prob. debris: " << pAgent->getProbDebris() << std::endl;
+
+			//agent->isAlive(false);
 		}
 		
 		newSpeed = curSpeed * reductionCoeff;

@@ -94,6 +94,7 @@ private:
 	
 	
 	Point2D  _position;
+	Point2D  _position_ini;
 	Vector2D _direction;
 	Vector2D _currVelocity;
 	

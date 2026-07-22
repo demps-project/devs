@@ -50,6 +50,7 @@ Agent::Agent(const uint32_t &id, \
 
 	_model     = model;
 	_position  = position;
+	_position_ini  = position;
 	
 	_safeZoneData.safeZoneNameID = "NA"; // Por omisión, la zona de seguridad no está asignada, se asigna después.
 	_safeZoneData.safeZone = nullptr;
@@ -563,18 +564,24 @@ void Agent::update()
 					//                                       Sólo puede pedir nuevamente cuando la
 					//                                       ruta aleatoria asignada se acabe.
 					
+					//this->isAlive(false); //test
+					
 					// mover el agente al cuadrante anterior
 					PatchAgent* pAgentOld = _myEnv->getPatchAgent(_quadOld);
 					PatchAgent::quad_t quadOldInfo = pAgentOld->getQuadInfo();
-					
 					Point2D newPosition = Point2D(quadOldInfo.xc, quadOldInfo.yc);
+
+					// mover el agente a la mitad del camino
+					//size_t pos = this->_route.size() - 2;
+					//auto it = std::next(this->_route.begin(), 0);
+					//Point2D newPosition = this->_route.front(); //Point2D(quadOldInfo.xc, quadOldInfo.yc);
 					
 					this->position(newPosition);
 					
 					this->isRouteRandom(true);
 						
-					auto response = _myEnv->getRouter()->route(this->position(), global::params.randomWalkwayRadius, true);
-					//auto response = _myEnv->getRouter()->route(this->position(),this->getTargetPos());
+					//auto response = _myEnv->getRouter()->route(this->position(), global::params.randomWalkwayRadius, true);
+					auto response = _myEnv->getRouter()->route(this->position(),this->_position_ini);
 					this->_route = response.path();	
 					
 					//std::cout << global::currTimeSim <<  "\t: " << this->id()  << "\t, ";

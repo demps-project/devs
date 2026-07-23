@@ -580,9 +580,17 @@ void Agent::update()
 					
 					this->isRouteRandom(true);
 						
-					//auto response = _myEnv->getRouter()->route(this->position(), global::params.randomWalkwayRadius, true);
+					auto response_random = _myEnv->getRouter()->route(this->position(), global::params.randomWalkwayRadius, true);
 					auto response = _myEnv->getRouter()->route(this->position(),this->_position_ini);
-					this->_route = response.path();	
+					
+					this->_route = response.path();
+
+
+					auto it_idx= std::next(this->_route.begin(), this->_route.size() / 4);
+					this->_route.erase(it_idx, this->_route.end() );
+
+
+					//_route.insert(_route.end(), response_random.path().begin(), response_random.path().end());
 					
 					//std::cout << global::currTimeSim <<  "\t: " << this->id()  << "\t, ";
 					//std::cout << "isMovingRandomDueDebris: " << this->isMovingRandomDueDebris() << ", ";
@@ -1078,6 +1086,9 @@ void Agent::followPath()
 				// con escombros, se activa el flag 'isMovingRandomDueDebris'. En el próximo tick
 				// deberá determinar una nueva ruta.
 				this->isMovingRandomDueDebris(seekNewRoute);
+				//this->isRouteRandom(seekNewRoute);
+
+				
 			}		
 		}
 		
@@ -1087,6 +1098,9 @@ void Agent::followPath()
 			_myEnv->setDensityVelocityOf(this);
 		}
 		
+		//if(this->isMovingRandomDueDebris()){
+		//	_currVelocity = -_currVelocity;
+		//}
 		
 		
 	

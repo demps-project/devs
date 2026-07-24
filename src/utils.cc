@@ -2,6 +2,29 @@
 
 namespace utils{
 	
+	std::string obtenerCampo(const std::string& texto, char delimitador, size_t indice) {
+		size_t inicio = 0;
+		size_t fin = texto.find(delimitador);
+		size_t contador = 0;
+
+		while (fin != std::string::npos) {
+			if (contador == indice) {
+				return texto.substr(inicio, fin - inicio);
+			}
+			
+			inicio = fin + 1;
+			fin = texto.find(delimitador, inicio);
+			contador++;
+		}
+
+		// Manejo del último campo (después del último delimitador)
+		if (contador == indice) {
+			return texto.substr(inicio);
+		}
+
+		// Si el índice pedido está fuera de rango
+		return "";
+	}
 	/*void elevationDataToVector(std::string fileName, std::map<int32_t, std::tuple<double, double,int32_t> >& elevData)
 	{
 		elevData.clear();

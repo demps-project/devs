@@ -16,6 +16,7 @@ public:
 
 	typedef std::vector<PatchAgent*> Neighbors;
 	typedef std::vector<PatchAgent*> Group;
+	typedef std::vector<PatchAgent*> Building;
 	typedef std::vector<uint32_t> idPatchNeighbors;
 	typedef std::map<std::string, PatchAgent::Group> monitorGroup;
 	
@@ -84,6 +85,10 @@ private:
 	bool   _isDebrisFree = true;
 	
 	bool _isInCity = false;
+
+	// Caso patch es un edificio
+	bool _isBuilding = false;
+	uint32_t _buildingCapacity = 0;
 	
 
 public:
@@ -136,4 +141,10 @@ public:
 	//void isFloodLevelUpdatable(bool i);
 	void setMaxLevelFlood(double m);
 	double getMaxLevelFlood();
+
+	void isBuilding(bool b);
+	bool isBuilding();
+
+	void setBuildingCapacity(uint32_t c);
+	uint32_t getBuildingCapacity();
 };

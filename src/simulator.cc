@@ -328,8 +328,10 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 	////////////////////////////////////////////
 	//  Si hay zonas de escombros definidas
 	if(_env->getDebrisZones().size() > 0){
-		*global::serverLog << "-----------Config Debris Zones----------" << std::endl;;
+		*global::serverLog << "-----------Config Debris Zones----------" << std::endl;
 		for(auto &dZone : _env->getDebrisZones()){
+			// Cada vez que se genera un punto dentro de una zona, se determina
+			// via MonteCarlo su área y coordenadas del centroide de la zona.
 			for(int idx=0; idx < 1000; idx++){
 				Point2D fooPoint =  dZone.generate();
 				uint32_t idPatch = _env->getQuadId(fooPoint);
@@ -356,6 +358,41 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 		}*/
 		
 	}
+
+	////////////////////////////////////////////
+	//  Si hay edificios definidas
+	if(_env->getBuildingZones().size() > 0){
+		*global::serverLog << "-----------Config Building Zones----------" << std::endl;
+		
+		/*for(auto &bZone : _env->getBuildingZones()){
+			// Cada vez que se genera un punto dentro de una zona, se determina
+			// via MonteCarlo su área y coordenadas del centroide de la zona.
+			for(int idx=0; idx < 1000; idx++){
+				bZone.generate();
+			}
+		}*/
+
+		for(auto &fooZone : _env->getBuildingZones()) {
+			*global::serverLog << std::setprecision(_filesimPrecision);
+			*global::serverLog << "ZONA " << fooZone.getNameID() << "\n" ;
+			*global::serverLog << "Area: " <<fooZone.getArea() << "\n" ;
+			*global::serverLog << "\t\tcentroidWGS84:" << fooZone.getCentroidWGS84() << "\n";
+			*global::serverLog << "\t\tXYminWGS84:" << fooZone.getXYminWGS84() << "\n";
+			*global::serverLog << "\t\tXYmaxWGS84:" << fooZone.getXYmaxWGS84() << "\n";
+			*global::serverLog << "\t\tcentroid:" << fooZone.getCentroid() <<  "\n";
+
+			uint32_t idPatch = _env->getQuadId(fooZone.getCentroid());
+			PatchAgent* pAgent = _env->getPatchAgent(idPatch);
+			
+			*global::serverLog << "\t\tPatchAgent:" << idPatch <<  "\n";
+			*global::serverLog << "\t\t\tisBuilding:" << pAgent->isBuilding() << "\n";
+			*global::serverLog << "\t\t\tbuilding Capacity:" << pAgent->getBuildingCapacity() <<  std::endl;
+
+
+		}
+	}
+
+	exit(EXIT_SUCCESS); //for testing only
 	
 	////////////////////////////////////////////
 	// Si no hay zonas inundables definidas,

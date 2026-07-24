@@ -133,6 +133,7 @@ namespace utils{
 	// la estructura 'utils::simulationsData'
 	typedef std::map<utils::dtwDistance_t, utils::simulationsData> simsComparisonMap_t;
 	
+	std::string obtenerCampo(const std::string& texto, char delimitador, size_t indice);
 	
 	utils::uuidSimulation_t get_uuid();
 	

@@ -286,7 +286,31 @@ void Environment::addDebrisZone(const json& debrisZone_feature){
 }
 
 void Environment::addBuildZone(const json& buildZone_feature){
-	_building_zones.push_back(Zone(buildZone_feature));
+	//_building_zones.push_back(Zone(buildZone_feature));
+	Zone building = Zone(buildZone_feature);
+	// Cada vez que se genera un punto dentro de una zona, se determina
+	// via MonteCarlo su área y coordenadas del centroide de la zona.
+	for(int idx=0; idx < 1000; idx++){
+		building.generate();
+	}
+
+	uint32_t idPatch = this->getQuadId(building.getCentroid());
+	building.addPatchAgent(idPatch);
+
+	std::string zoneNameID = building.getNameID();
+
+	std::string capacity = utils::obtenerCampo(zoneNameID, '-', 1);
+	uint32_t capacityInt =  std::stoi(utils::obtenerCampo(capacity, 'p', 0));
+
+	//*global::serverLog << "ZONA " << zoneNameID << "\n" ;
+	//*global::serverLog << "capacidad " << capacityInt << "\n" ;
+
+	PatchAgent* pAgent = this->getPatchAgent(idPatch);
+	pAgent->isBuilding(true);
+	pAgent->setBuildingCapacity(capacityInt);
+
+	_building_zones.push_back(building);
+	
 }
 
 /**

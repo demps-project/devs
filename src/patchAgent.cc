@@ -508,7 +508,21 @@ double PatchAgent::getMaxLevelFlood()
 	return(_maxLevelFlood);
 }
 
+void PatchAgent::isBuilding(bool b){
+	this->_isBuilding = b;
+}
 
+bool PatchAgent::isBuilding(){
+	return this->_isBuilding;
+}
+
+void PatchAgent::setBuildingCapacity(uint32_t c){
+	this->_buildingCapacity = c;
+}
+
+uint32_t PatchAgent::getBuildingCapacity(){
+	return this->_buildingCapacity;
+}
 
 
 

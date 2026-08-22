@@ -392,7 +392,7 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 		}
 	}
 
-	exit(EXIT_SUCCESS); //for testing only
+	//exit(EXIT_SUCCESS); //for testing only
 	
 	////////////////////////////////////////////
 	// Si no hay zonas inundables definidas,

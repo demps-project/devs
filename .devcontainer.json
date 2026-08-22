@@ -22,6 +22,14 @@
 	      "label": "Apache web server"
 	    }
 	},
+    "runArgs": [
+        "--platform", "linux/amd64"
+      ],
+    "build": {
+        "options": [
+          "--platform=linux/amd64"
+        ]
+      },
 	
 	"customizations": {
 	        "vscode": {

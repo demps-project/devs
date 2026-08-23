@@ -9,6 +9,7 @@ using json=nlohmann::json;
 #include <uuid/uuid.h>
 
 #include <DTW.hh>
+#include <fstream>
 
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h> 
@@ -133,6 +134,7 @@ namespace utils{
 	// la estructura 'utils::simulationsData'
 	typedef std::map<utils::dtwDistance_t, utils::simulationsData> simsComparisonMap_t;
 	
+	bool copiar_archivo_streams(const std::string& ruta_origen, const std::string& ruta_destino);
 	std::string obtenerCampo(const std::string& texto, char delimitador, size_t indice);
 	
 	utils::uuidSimulation_t get_uuid();

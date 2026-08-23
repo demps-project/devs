@@ -1,6 +1,44 @@
 #include <utils.hh>
 
 namespace utils{
+	bool copiar_archivo_streams(const std::string& ruta_origen, const std::string& ruta_destino) {
+		std::string contenido;
+
+		// --- Fase 1: Leer contenido y cerrar archivo origen ---
+		{
+			std::ifstream in(ruta_origen);
+			if (!in.is_open()) {
+				std::cerr << "Error: No se pudo abrir el archivo origen: " << ruta_origen << '\n';
+				return false;
+			}
+
+			// Carga todo el texto en el string usando un stringstream buffer
+			std::ostringstream ss;
+			ss << in.rdbuf();
+			contenido = ss.str();
+
+			in.close(); // Se cierra explícitamente antes de continuar
+		}
+
+		// --- Fase 2: Crear archivo destino y escribir el contenido guardado ---
+		{
+			std::ofstream out(ruta_destino, std::ios::trunc);
+			if (!out.is_open()) {
+				std::cerr << "Error: No se pudo crear el archivo destino: " << ruta_destino << '\n';
+				return false;
+			}
+
+			out << contenido;
+			out.close(); // Se asegura de volcar el buffer a disco y cerrar el descriptor
+
+			if (!out.good() && out.fail()) {
+				std::cerr << "Error: Fallo al escribir los datos en: " << ruta_destino << '\n';
+				return false;
+			}
+		}
+
+		return true;
+	}
 	
 	std::string obtenerCampo(const std::string& texto, char delimitador, size_t indice) {
 		size_t inicio = 0;

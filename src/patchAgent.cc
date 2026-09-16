@@ -107,8 +107,8 @@ std::vector<uint32_t>& PatchAgent::getAgents()
 
 std::vector<uint32_t>& PatchAgent::getNeighborsAgents()
 {	
-	/*
-	idPatchNeighbors patchNeighbors = this->findPatchNeighbors4();
+	
+	idPatchNeighbors patchNeighbors = this->findPatchNeighbors();
 	
 	std::vector<uint32_t> NeighborsAgents;
 	NeighborsAgents = this->getAgents();
@@ -119,15 +119,15 @@ std::vector<uint32_t>& PatchAgent::getNeighborsAgents()
 		newNeighborsAgents = _myEnv->getPatchAgent( fooIdPatch )->getAgents();
 		NeighborsAgents.insert(NeighborsAgents.end(), newNeighborsAgents.begin(), newNeighborsAgents.end());
 
-	}*/
+	}
 	
-	/*std::lock_guard<std::mutex> l(_mtx);
+	std::lock_guard<std::mutex> l(_mtx);
 	_neighborsAgents.clear();
 	_neighborsAgents = NeighborsAgents;
-	return(_neighborsAgents);*/
+	return(_neighborsAgents);
 	
 	
-	return(_agentsInPatch);
+	//return(_agentsInPatch);
 
 	
 	

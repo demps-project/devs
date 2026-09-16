@@ -404,7 +404,7 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 		for(auto &fooZone : _env->getBuildingZones()) {
 			*global::serverLog << std::setprecision(_filesimPrecision);
 			*global::serverLog << "ZONA " << fooZone.getNameID() << "\n" ;
-			*global::serverLog << "Area: " <<fooZone.getArea() << "\n" ;
+			*global::serverLog << "\t\tArea: " <<fooZone.getArea() << "\n" ;
 			*global::serverLog << "\t\tcentroidWGS84:" << fooZone.getCentroidWGS84() << "\n";
 			*global::serverLog << "\t\tXYminWGS84:" << fooZone.getXYminWGS84() << "\n";
 			*global::serverLog << "\t\tXYmaxWGS84:" << fooZone.getXYmaxWGS84() << "\n";

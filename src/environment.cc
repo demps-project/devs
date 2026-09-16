@@ -1702,6 +1702,16 @@ void Environment::updateLogsStats()
 		            std::to_string(reference_zone.getTotalAgents()) + ":" + \
 		            std::to_string(reference_zone.getAgentsDensity());		
 	}
+
+	for(auto& building_zone : this->getBuildingZones() ){
+		uint32_t idPatch = this->getQuadId(building_zone.getCentroid());
+		PatchAgent* pAgent = this->getPatchAgent(idPatch);
+		std::vector<uint32_t> listAgents = pAgent->getNeighborsAgents();
+		uint32_t totalAgentsInPatch = listAgents.size();
+
+		logString +=  ":" + building_zone.getNameID() + ":" + \
+					std::to_string(totalAgentsInPatch);
+	}
 	global::simOutputs.logs.zonesDensity.push_back(logString);
 	
 }

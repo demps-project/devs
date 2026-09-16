@@ -138,8 +138,7 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 		std::filesystem::create_directories( _animPath + "/input" );
 	}
 
-	std::string zoneFileName = std::filesystem::path(_fsettings["input"]["zones"].get<std::string>()).filename();
-
+	/*std::string zoneFileName = std::filesystem::path(_fsettings["input"]["zones"].get<std::string>()).filename();
 	std::cout << "zoneFileName:" <<  _animPath + "/input/" + zoneFileName << "\n";
 
 	try{
@@ -156,9 +155,9 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 			std::string comando = "cp -f \"" + origen + "\" \"" + destino + "\"";
 	    	int resultado = std::system(comando.c_str());
 		}
-    }
+    }*/
 
-	try{
+	/*try{
 		std::filesystem::copy(global::params.animationDir + global::params.animationFile, _animPath + global::params.animationFile);
 	}
 	catch (std::filesystem::filesystem_error& e){
@@ -172,7 +171,7 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 			std::string comando = "cp -f \"" + origen + "\" \"" + destino + "\"";
 	    	int resultado = std::system(comando.c_str());
 		}
-    }
+    }*/
 
 	_animConfig = _animPath + _fsettings["output"]["anim-config"].get<std::string>();
 
@@ -950,9 +949,33 @@ void Simulator::run()
 		}}
 	};
 	
+	*global::serverLog << "Creando configuración animación:\n";
+	*global::serverLog << "\tarchivo config destino: " << _animConfig << std::endl;
 	std::ofstream ofs( _animConfig );
+
+
 	ofs << animacionConfig.dump(4) << std::endl;
-		
+
+	*global::serverLog << "Copiando archivos zonas a directorio de animación:\n";
+	*global::serverLog << "\archivo origen : " <<  _fsettings["input"]["zones"].get<std::string>() << "\n";
+	*global::serverLog << "\archivo destino: " <<  _animPath + "/input/" + zoneFileName << std::endl;
+	 
+	utils::copiar_archivo_streams(_fsettings["input"]["zones"].get<std::string>(), _animPath + "/input/" + zoneFileName);
+	//std::filesystem::copy(_fsettings["input"]["zones"].get<std::string>(), _animPath + "/input/" + zoneFileName );
+
+
+	*global::serverLog << "Copiando animation.html a directorio de animación:\n";
+	*global::serverLog << "\archivo origen : " <<  global::params.animationDir + global::params.animationFile << "\n";
+	*global::serverLog << "\archivo destino: " <<  _animPath + global::params.animationFile << std::endl;
+
+	utils::copiar_archivo_streams(global::params.animationDir + global::params.animationFile, _animPath + global::params.animationFile);
+
+	//try{
+	//	std::filesystem::copy(global::params.animationDir + global::params.animationFile, _animPath + global::params.animationFile);
+	//}
+	//catch (std::filesystem::filesystem_error& e){
+    //     *global::serverLog << "Could not copy with std::filesystem::copy : " << e.what() << std::endl;
+
 	
 	
 	/*

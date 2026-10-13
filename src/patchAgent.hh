@@ -86,7 +86,7 @@ private:
 	
 	bool _isInCity = false;
 
-	// Caso patch es un edificio
+	// Caso patch puede ser un edificio
 	bool _isBuilding = false;
 	uint32_t _buildingCapacity = 0;
 	

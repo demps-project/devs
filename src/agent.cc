@@ -122,7 +122,7 @@ Agent::Agent(const uint32_t &id, \
 	
 	// Se modula la sigma según la cantidad de personas que tenga el edificio al inicio
 	if(this->inBuilding()){
-		_responseTimeEngine.sigma *= std::log10(_myEnv->getPatchAgent(this->getPatchAgentBuilding())->getBuildingPeopleInside());
+		_responseTimeEngine.sigma *= log(_myEnv->getPatchAgent(this->getPatchAgentBuilding())->getBuildingPeopleInside());
 	}
 	_responseTime = _responseTimeEngine.getRayleigh();
 	

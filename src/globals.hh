@@ -65,6 +65,7 @@ namespace global{
 
 		struct Logs_s {
 			std::vector<std::string> zonesDensity; 
+			std::vector<std::string> buildings; 
 			std::vector<uint32_t>    usePhone;     
 			std::vector<std::string> velocity;     
 			std::vector<std::string> SIRpanic;     

@@ -524,5 +524,18 @@ uint32_t PatchAgent::getBuildingCapacity(){
 	return this->_buildingCapacity;
 }
 
+void PatchAgent::setBuildingPeopleInside(uint32_t c){
+	this->_buildingPeopleInside = c;
+}
+uint32_t PatchAgent::getBuildingPeopleInside(){
+	return this->_buildingPeopleInside;
+}
+
+void PatchAgent::decBuildingPeopleInside(){
+	if(this->_buildingPeopleInside > 0){
+		#pragma omp atomic
+		this->_buildingPeopleInside -= 1;
+	}
+}
 
 

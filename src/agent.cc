@@ -69,6 +69,8 @@ Agent::Agent(const uint32_t &id, \
 		_radius = 0.45;
 	}
 	
+	_evacuationData.fromBuilding   = false;
+	_evacuationData.inBuilding     = false;
 	_evacuationData.inSafeZone     = false;
 	_evacuationData.arrivedAtDestinationPoint = false;
 	_evacuationData.evacuationTime = -1;
@@ -80,6 +82,17 @@ Agent::Agent(const uint32_t &id, \
 	_evacuationData.isRouteRandom = false;
 	_evacuationData.timeLived = -1;
 	
+	// Sólo en el caso que el agente fue creado dentro de un
+	// edificio, se activa la bandera fromBuilding
+	if((initialZoneNameID.find("Edificio") != std::string::npos) || (initialZoneNameID.find("edificio") != std::string::npos)){
+		this->fromBuilding(true);
+		this->inBuilding(true);
+		this->setPatchAgentBuilding(_myEnv->getQuadId(_position));
+
+		//std::cout << "Agent: " << _id << ", Edificio patch: " << this->getPatchAgentBuilding() << "\n";
+		//PatchAgent* pAgent = _myEnv->getPatchAgent(quadID);
+		//pAgent->decBuildingPeopleInside();
+	}
 	
 
 	
@@ -107,7 +120,10 @@ Agent::Agent(const uint32_t &id, \
 	_responseTimeEngine.sigma = responseTime["sigma"].get<double>();
 	_responseTimeEngine.tau   = responseTime["tau"].get<double>();
 	
-	
+	// Se modula la sigma según la cantidad de personas que tenga el edificio al inicio
+	if(this->inBuilding()){
+		_responseTimeEngine.sigma *= std::log10(_myEnv->getPatchAgent(this->getPatchAgentBuilding())->getBuildingPeopleInside());
+	}
 	_responseTime = _responseTimeEngine.getRayleigh();
 	
 	//Parametros para la simulación de Makinoshima (2018)
@@ -235,6 +251,30 @@ const Vector2D Agent::currVelocity(void)
 void Agent::currVelocity(const Vector2D& velocity)
 {
 	_currVelocity = velocity;
+}
+
+bool Agent::fromBuilding(){
+	return this->_evacuationData.fromBuilding;
+}
+
+void Agent::fromBuilding(bool f){
+	this->_evacuationData.fromBuilding = f;
+}
+
+bool Agent::inBuilding(){
+	return this->_evacuationData.inBuilding;
+}
+void Agent::inBuilding(bool b){
+	this->_evacuationData.inBuilding = b;
+}
+
+
+void Agent::setPatchAgentBuilding(uint32_t p){
+	this->_evacuationData.patchAgentBuilding = p;
+}
+
+uint32_t  Agent::getPatchAgentBuilding(){
+	return this->_evacuationData.patchAgentBuilding;
 }
 
 bool Agent::inSafeZone()
@@ -534,6 +574,16 @@ void Agent::update()
 				this->isWaiting(false);	
 			}
 			else{
+				if(this->fromBuilding() && this->inBuilding()){
+					// edificio donde está el agente
+					uint32_t patchBuild = this->getPatchAgentBuilding();
+					PatchAgent* pAgent  = _myEnv->getPatchAgent(patchBuild);
+
+					// decrementar la cantidad de personas dentro del edificio
+					pAgent->decBuildingPeopleInside();
+
+					this->inBuilding(false);
+				}
 				this->isMoving(true);
 				this->isWaiting(false);	
 			}

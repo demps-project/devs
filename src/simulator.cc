@@ -415,7 +415,8 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 			
 			*global::serverLog << "\t\tPatchAgent:" << idPatch <<  "\n";
 			*global::serverLog << "\t\t\tisBuilding:" << pAgent->isBuilding() << "\n";
-			*global::serverLog << "\t\t\tbuilding Capacity:" << pAgent->getBuildingCapacity() <<  std::endl;
+			*global::serverLog << "\t\t\tcapacity     :" << pAgent->getBuildingCapacity() << "\n";
+			*global::serverLog << "\t\t\tpeople inside:" << pAgent->getBuildingPeopleInside() <<  std::endl;
 
 
 		}
@@ -515,8 +516,11 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 		}
 	}
 
-	
-	*global::serverLog  << "Creando agentes..." << std::endl;
+	////////////////////////////////////////////
+	// CREAR AGENTES PARTE 1
+	// zonas iniciales según
+	// datos de configuración.
+	*global::serverLog  << "Creando agentes en zonas iniciales..." << std::endl;
 	global::simOutputs.agentsMem = this->getMaxMemory();
 
 	auto start = std::chrono::system_clock::now(); //Measure Time
@@ -592,6 +596,68 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 			
 		}
 	}
+
+	////////////////////////////////////////////
+	// CREAR AGENTES PARTE 2
+	// Si hay edificios definidos
+	// Crear agentes en edificios según
+	// la capacidad de cada uno de ellos.
+	
+	if(_env->getBuildingZones().size() > 0){
+		*global::serverLog  << "Creando agentes en edificios..." << std::endl;
+		
+		for(auto &fooZone : _env->getBuildingZones()) {
+			uint32_t idPatch = _env->getQuadId(fooZone.getCentroid());
+			PatchAgent* pAgent = _env->getPatchAgent(idPatch);
+
+			*global::serverLog << std::setprecision(_filesimPrecision);
+			*global::serverLog << "Edificio " << fooZone.getNameID() << "\n" ;
+			*global::serverLog << "\t\tcentroid WGS84: " << fooZone.getCentroidWGS84() << "\n";
+			*global::serverLog << "\t\tcentroid X,Y  : " << fooZone.getCentroid() <<  "\n";
+			*global::serverLog << "\t\tPatchAgent    : " << idPatch <<  "\n";
+			*global::serverLog << "\t\tpeople inside : " << pAgent->getBuildingPeopleInside() <<  std::endl;
+
+			//Point2D position              = fooZone.generate();
+			Point2D position = fooZone.getCentroid();
+
+			std::string initialZoneNameID = fooZone.getNameID();
+			model_t modelID               = model_map["Residents"];
+			
+			json ageRange         = _fsettings["agents"][0]["ageRange"];
+			json SocialForceModel = _fsettings["agents"][0]["SFM"];
+			json responseTime     = _fsettings["agents"][0]["responseTime"];
+			json phoneUse         = _fsettings["agents"][0]["phoneUse"];
+			json panicModel       = _fsettings["agents"][0]["panicModel"];
+			if(_fsettings["panicModelEnable"] == true && _fsettings["panicModelManageByParameter"] == true){
+				// El nivel minimo de emoción para que el agente se infecte se carga desde los 
+				// parámetros del programa (L:120 demps.cc)
+				panicModel["emotionThreshold"] = _fsettings["emotionThreshold"].get<double>() / 100.0;
+			}
+
+			// Ciclo de creación dependiendo de la cantidad de agentes
+			// que deba tener cada edificio.
+
+			for(uint32_t person = 0; person < pAgent->getBuildingPeopleInside(); person++){
+				_env->addAgent(\
+					new Agent(id++,\
+						position,\
+						initialZoneNameID,\
+						modelID,\
+						ageRange,\
+						phoneUse,\
+						SocialForceModel,\
+						panicModel,\
+						responseTime
+					)\
+				);
+			}
+			
+		}
+	}
+	else{
+		*global::serverLog  << "No hay edificios definidos..." << std::endl;
+	}
+
 	global::simOutputs.totalAgentsInSim = id;
 	auto end = std::chrono::system_clock::now(); //Measure Time
 	auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
@@ -603,6 +669,8 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 		std::cout << std::flush;
 		std::cout << std::endl;
 	}
+
+	*global::serverLog  << "Agentes en simulación: " << global::simOutputs.totalAgentsInSim << std::endl;
 	
 }
 
@@ -1531,6 +1599,22 @@ void Simulator::makeStats()
 		ofs01 << item << std::endl;
 	}
 	ofs01.close();
+
+	////////////////////////////////////////////////////////
+	//	personas dentro de edificios
+	//
+	pathFile01 = _statsPath + "/buildings" +  nameSuffix;
+	ofs01.open(pathFile01);
+	for(auto& item : global::simOutputs.logs.buildings) {
+		
+		if( _numExperiment >= 0){
+			ofs01 << _numExperiment << ":";
+		}
+		
+		ofs01 << item << std::endl;
+	}
+	ofs01.close();
+
 	
 	////////////////////////////////////////////////////////
 	//	usePhone

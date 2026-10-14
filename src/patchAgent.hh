@@ -89,6 +89,7 @@ private:
 	// Caso patch puede ser un edificio
 	bool _isBuilding = false;
 	uint32_t _buildingCapacity = 0;
+	uint32_t _buildingPeopleInside = 0;
 	
 
 public:
@@ -147,4 +148,8 @@ public:
 
 	void setBuildingCapacity(uint32_t c);
 	uint32_t getBuildingCapacity();
+
+	void setBuildingPeopleInside(uint32_t c);
+	uint32_t getBuildingPeopleInside();
+	void decBuildingPeopleInside();
 };

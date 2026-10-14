@@ -308,6 +308,7 @@ void Environment::addBuildZone(const json& buildZone_feature){
 	PatchAgent* pAgent = this->getPatchAgent(idPatch);
 	pAgent->isBuilding(true);
 	pAgent->setBuildingCapacity(capacityInt);
+	pAgent->setBuildingPeopleInside(capacityInt);
 
 	_building_zones.push_back(building);
 	
@@ -1241,9 +1242,19 @@ void Environment::adjustAgentsInitialPosition(const uint32_t& calibrationTime)
 		}
 
 		Agent* agent = this->getAgent(i);
+		if(agent->inBuilding()){
+			//continue;
+			auto response = this->getRouter()->route(agent->position(),1);
+			agent->_route = response.path();
+		}
+		else{
+			auto response = this->getRouter()->route(agent->position(),global::params.randomWalkwayRadius);
+			agent->_route = response.path();
+		}
+		//auto response = this->getRouter()->route(agent->position(),global::params.randomWalkwayRadius);
+		//agent->_route = response.path();
 
-		auto response = this->getRouter()->route(agent->position(),global::params.randomWalkwayRadius);
-		agent->_route = response.path();
+
 	}
 
 	if(global::execOptions.showProgressBar) {
@@ -1263,12 +1274,20 @@ void Environment::adjustAgentsInitialPosition(const uint32_t& calibrationTime)
 		#pragma omp parallel for
 		for(uint32_t i = 0; i < this->getTotalAgents(); i++) {
 			Agent* agent = this->getAgent(i);
-
-			if(agent->_route.empty()) {
+			if(agent->inBuilding()){
+				continue;
+			}else{
+				if(agent->_route.empty()) {
+					auto response = this->getRouter()->route(agent->position(),global::params.randomWalkwayRadius);
+					agent->_route = response.path();
+				}
+				agent->randomWalkwayForAdjustInitialPosition();
+			}
+			/*if(agent->_route.empty()) {
 				auto response = this->getRouter()->route(agent->position(),global::params.randomWalkwayRadius);
 				agent->_route = response.path();
 			}
-			agent->randomWalkwayForAdjustInitialPosition();
+			agent->randomWalkwayForAdjustInitialPosition();*/
 		}
 	}
 	
@@ -1695,6 +1714,8 @@ void Environment::updateLogsStats()
 
 	std::string logString;
 	
+	////////////////////////////////////////////
+	// Registro de personas dentro de zonas y edificios
 	logString = std::to_string(global::currTimeSim*global::params.deltaT);
 	
 	for(auto& reference_zone : this->getReferenceZones() ) {	
@@ -1713,6 +1734,22 @@ void Environment::updateLogsStats()
 					std::to_string(totalAgentsInPatch);
 	}
 	global::simOutputs.logs.zonesDensity.push_back(logString);
+
+	////////////////////////////////////////////
+	// Registro de personas dentro de edificios
+	logString = std::to_string(global::currTimeSim*global::params.deltaT);
+
+	for(auto& building_zone : this->getBuildingZones() ){
+		uint32_t idPatch = this->getQuadId(building_zone.getCentroid());
+		PatchAgent* pAgent = this->getPatchAgent(idPatch);
+		std::vector<uint32_t> listAgents = pAgent->getNeighborsAgents();
+		uint32_t totalAgentsInBuilding = pAgent->getBuildingPeopleInside();
+
+		logString +=  ":" + building_zone.getNameID() + ":" + \
+					std::to_string(totalAgentsInBuilding);
+	}
+	global::simOutputs.logs.buildings.push_back(logString);
+
 	
 }
 

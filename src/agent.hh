@@ -99,6 +99,10 @@ private:
 	Vector2D _currVelocity;
 	
 	struct s_evacuationData{
+		bool   fromBuilding;
+		bool   inBuilding;
+		uint32_t patchAgentBuilding;
+
 		bool   inSafeZone;
 		bool   arrivedAtDestinationPoint;
 		double evacuationTime;
@@ -280,6 +284,13 @@ public:
 	const Vector2D currVelocity(void);
 	void           currVelocity(const Vector2D& velocity);
 	
+	bool	 fromBuilding();
+	void     fromBuilding(bool f);
+	bool     inBuilding();
+	void     inBuilding(bool b);
+	
+	void     setPatchAgentBuilding(uint32_t p);
+	uint32_t  getPatchAgentBuilding();
 	bool     inSafeZone();
 	void     inSafeZone(bool in);
 	void     isMoving(bool m);

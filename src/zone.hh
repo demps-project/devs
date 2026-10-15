@@ -51,6 +51,7 @@ private:
 	std::set<uint32_t> _agentsInZone;
 	std::set<uint32_t> _agentsAssignedInZone;
 	std::set<uint32_t> _patchAgentsInZone;
+	uint32_t           _patchAgentCentroid;
 	double             _agentsDensity;
 	
 	NSWEPatchAgentsInZone_t _NSWEAgentsInZone;
@@ -108,6 +109,10 @@ public:
 	
 	//void assignPatchAgents();
 	void addPatchAgent(uint32_t patchID);
+
+	void setPatchAgentCentroid(uint32_t patchID);
+	uint32_t getPatchAgentCentroid();
+	
 	void deletePatchAgent(const uint32_t& patchID);
 	const std::set<uint32_t>& patchAgentsInZone(void);
 	void setNSWEPatchAgentsInZone(void);

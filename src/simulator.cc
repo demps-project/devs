@@ -410,7 +410,7 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 			*global::serverLog << "\t\tXYmaxWGS84:" << fooZone.getXYmaxWGS84() << "\n";
 			*global::serverLog << "\t\tcentroid:" << fooZone.getCentroid() <<  "\n";
 
-			uint32_t idPatch = _env->getQuadId(fooZone.getCentroid());
+			uint32_t idPatch =  fooZone.getPatchAgentCentroid(); //_env->getQuadId(fooZone.getCentroid());
 			PatchAgent* pAgent = _env->getPatchAgent(idPatch);
 			
 			*global::serverLog << "\t\tPatchAgent:" << idPatch <<  "\n";
@@ -650,9 +650,22 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 						responseTime
 					)\
 				);
+				fooZone.addAgent(id);
 			}
 			
 		}
+
+		std::set<uint32_t> agentsInBuilding;
+
+		for(auto &fooZone : _env->getBuildingZones()) {
+			*global::serverLog << "Edificio " << fooZone.getNameID() << "\n";
+			*global::serverLog << "\t\tpatchAgent in centroid : " << fooZone.getPatchAgentCentroid() << "\n";
+			*global::serverLog << "\t\tagents created         : " << fooZone.getTotalAgents()        << "\n";
+			auto idAgents = fooZone.agentsInZone();
+			agentsInBuilding.insert(idAgents.begin(), idAgents.end());
+		}
+
+		*global::serverLog << "Total agents in buildings: " << agentsInBuilding.size() << std::endl;
 	}
 	else{
 		*global::serverLog  << "No hay edificios definidos..." << std::endl;

@@ -296,14 +296,16 @@ void Environment::addBuildZone(const json& buildZone_feature){
 
 	uint32_t idPatch = this->getQuadId(building.getCentroid());
 	building.addPatchAgent(idPatch);
+	building.setPatchAgentCentroid(idPatch);
 
 	std::string zoneNameID = building.getNameID();
 
 	std::string capacity = utils::obtenerCampo(zoneNameID, '-', 1);
 	uint32_t capacityInt =  std::stoi(utils::obtenerCampo(capacity, 'p', 0));
 
-	//*global::serverLog << "ZONA " << zoneNameID << "\n" ;
-	//*global::serverLog << "capacidad " << capacityInt << "\n" ;
+	//*global::serverLog << "ZONA: " << zoneNameID << "\n" ;
+	//*global::serverLog << "capacidad: " << capacityInt << "\n" ;
+	//*global::serverLog << "PatchAgentCentroid: " << building.getPatchAgentCentroid() << "\n" ;
 
 	PatchAgent* pAgent = this->getPatchAgent(idPatch);
 	pAgent->isBuilding(true);

@@ -134,6 +134,7 @@ Zone::Zone(const Zone &_z)
 	this->_projector     = _z._projector;
 	this->_agentsDensity = _z._agentsDensity;
 	this->_agentsInZone  = _z._agentsInZone;
+	this->_patchAgentCentroid = _z._patchAgentCentroid;
 	this->_patchAgentsInZone = _z._patchAgentsInZone;
 	this->_centroid  = _z._centroid;
 	this->_xyMin  = _z._xyMin;
@@ -162,6 +163,7 @@ Zone& Zone::operator=(const Zone &_z)
 	this->_agentsDensity = _z._agentsDensity;
 	this->_agentsInZone  = _z._agentsInZone;
 	this->_patchAgentsInZone = _z._patchAgentsInZone;
+	this->_patchAgentCentroid = _z._patchAgentCentroid;
 	this->_xyMin  = _z._xyMin;
 	this->_xyMax  = _z._xyMax;
 	this->_avgCentroidX = _z._avgCentroidX;
@@ -436,6 +438,14 @@ void Zone::addPatchAgent(uint32_t patchID)
 {
 	std::lock_guard<std::mutex> l(_mtx);
 	_patchAgentsInZone.insert(patchID);
+}
+
+void Zone::setPatchAgentCentroid(uint32_t patchID){
+	this->_patchAgentCentroid = patchID;
+}
+
+uint32_t Zone::getPatchAgentCentroid(){
+	return this->_patchAgentCentroid;
 }
 
 void Zone::deletePatchAgent(const uint32_t& patchID)

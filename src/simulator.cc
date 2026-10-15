@@ -607,14 +607,14 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 		*global::serverLog  << "Creando agentes en edificios..." << std::endl;
 		
 		for(auto &fooZone : _env->getBuildingZones()) {
-			uint32_t idPatch = _env->getQuadId(fooZone.getCentroid());
-			PatchAgent* pAgent = _env->getPatchAgent(idPatch);
+			uint32_t idPatchAgentCentroid = fooZone.getPatchAgentCentroid();
+			PatchAgent* pAgent = _env->getPatchAgent(idPatchAgentCentroid);
 
 			*global::serverLog << std::setprecision(_filesimPrecision);
 			*global::serverLog << "Edificio " << fooZone.getNameID() << "\n" ;
 			*global::serverLog << "\t\tcentroid WGS84: " << fooZone.getCentroidWGS84() << "\n";
 			*global::serverLog << "\t\tcentroid X,Y  : " << fooZone.getCentroid() <<  "\n";
-			*global::serverLog << "\t\tPatchAgent    : " << idPatch <<  "\n";
+			*global::serverLog << "\t\tPatchAgent    : " << idPatchAgentCentroid <<  "\n";
 			*global::serverLog << "\t\tpeople inside : " << pAgent->getBuildingPeopleInside() <<  std::endl;
 
 			//Point2D position              = fooZone.generate();
@@ -639,7 +639,7 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 
 			for(uint32_t person = 0; person < pAgent->getBuildingPeopleInside(); person++){
 				_env->addAgent(\
-					new Agent(id++,\
+					new Agent(id,\
 						position,\
 						initialZoneNameID,\
 						modelID,\
@@ -651,21 +651,27 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 					)\
 				);
 				fooZone.addAgent(id);
+				pAgent->addAgentInBuilding(id);
+				id++;
 			}
 			
 		}
 
-		std::set<uint32_t> agentsInBuilding;
-
+		uint32_t totalAgentsInBuilding = 0;
 		for(auto &fooZone : _env->getBuildingZones()) {
+			uint32_t idPatchAgentCentroid = fooZone.getPatchAgentCentroid();
+			PatchAgent* pAgent = _env->getPatchAgent(idPatchAgentCentroid);
+			pAgent->setNextTimeToGo(0.5);
+
 			*global::serverLog << "Edificio " << fooZone.getNameID() << "\n";
-			*global::serverLog << "\t\tpatchAgent in centroid : " << fooZone.getPatchAgentCentroid() << "\n";
-			*global::serverLog << "\t\tagents created         : " << fooZone.getTotalAgents()        << "\n";
-			auto idAgents = fooZone.agentsInZone();
-			agentsInBuilding.insert(idAgents.begin(), idAgents.end());
+			*global::serverLog << "\t\tpatchAgent in centroid : " << idPatchAgentCentroid << "\n";
+			*global::serverLog << "\t\tagents created         : " << pAgent->getAgentsInBuilding().size() << "\n";
+			*global::serverLog << "\t\tnext time to go        : " << pAgent->getNextTimeToGo() << "\n";
+
+			totalAgentsInBuilding += pAgent->getAgentsInBuilding().size();
 		}
 
-		*global::serverLog << "Total agents in buildings: " << agentsInBuilding.size() << std::endl;
+		*global::serverLog << "Total agents in buildings: " << totalAgentsInBuilding << std::endl;
 	}
 	else{
 		*global::serverLog  << "No hay edificios definidos..." << std::endl;
@@ -871,6 +877,7 @@ void Simulator::run()
 		utils::Timer<std::chrono::milliseconds> timerUpdates;
 		timerUpdates.start();
 
+
 		_env->updateQuads();
 		// intervalo de tiempo que se demora en actualizar los cuadrantes
 		auto deltaTimeQuads = timerUpdates.curr();
@@ -915,6 +922,13 @@ void Simulator::run()
 				// crea archivo del estado de la inundación
 				this->saveStateFlood();
 			}
+		}
+
+		for(auto &fooZone : _env->getBuildingZones()) {
+			uint32_t idPatchAgentCentroid = fooZone.getPatchAgentCentroid();
+			PatchAgent* pAgent = _env->getPatchAgent(idPatchAgentCentroid);
+			double lambda = 200;
+			pAgent->checkTimeToGo(lambda);
 		}
 		
 		

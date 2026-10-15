@@ -119,12 +119,14 @@ Agent::Agent(const uint32_t &id, \
 	
 	_responseTimeEngine.sigma = responseTime["sigma"].get<double>();
 	_responseTimeEngine.tau   = responseTime["tau"].get<double>();
+	_responseTime = _responseTimeEngine.getRayleigh();
 	
 	// Se modula la sigma según la cantidad de personas que tenga el edificio al inicio
 	if(this->inBuilding()){
-		_responseTimeEngine.sigma *= log(_myEnv->getPatchAgent(this->getPatchAgentBuilding())->getBuildingPeopleInside());
+		//_responseTimeEngine.sigma *= log(_myEnv->getPatchAgent(this->getPatchAgentBuilding())->getBuildingPeopleInside());
+		_responseTime = 20000; // tiempo absurdamente alto==> nunca se van a mover
 	}
-	_responseTime = _responseTimeEngine.getRayleigh();
+	
 	
 	//Parametros para la simulación de Makinoshima (2018)
 	//_responseTime = _responseTimeEngine.getLogNormalNumber(6.383, 0.1655); // dt=1.00 <- Makinoshima
@@ -540,6 +542,11 @@ double Agent::responseTime(void) const
 	return(_responseTime);
 }
 
+void Agent::responseTime(double t)
+{
+	this->_responseTime = t;
+}
+
 void Agent::update()
 {
 	/*if(_id == 1000){
@@ -581,6 +588,8 @@ void Agent::update()
 
 					// decrementar la cantidad de personas dentro del edificio
 					pAgent->decBuildingPeopleInside();
+					//pAgent->delAgentInBuilding(this->id());
+					
 
 					this->inBuilding(false);
 				}

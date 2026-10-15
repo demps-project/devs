@@ -338,6 +338,8 @@ public:
 	void    setGradient(const double gradient);
 	
 	double  responseTime(void) const;
+	void    responseTime(double t);
+
 
 	void update();
 

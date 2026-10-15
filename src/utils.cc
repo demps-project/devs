@@ -1,6 +1,33 @@
 #include <utils.hh>
 
 namespace utils{
+	uint32_t pop_random_element(std::set<uint32_t>& s) {
+		if (s.empty()) {
+			throw std::runtime_error("El conjunto está vacío.");
+		}
+
+		// Motor PRNG persistente por hilo (evita resembrar en cada llamada)
+		static thread_local std::mt19937 gen(std::random_device{}());
+
+		// Rango uniforme sobre los índices válidos actuales
+		std::uniform_int_distribution<std::size_t> dist(0, s.size() - 1);
+
+		// Desplazamiento lineal sobre el árbol hasta la posición sorteada
+		auto it = std::next(s.begin(), dist(gen));
+
+		// Extrae el nodo del set (C++17) y desvincula la clave
+		auto node = s.extract(it);
+		return node.value();
+	}
+	double exponentialTime(double lambda){
+		std::random_device _randomDevice;
+		std::mt19937 gen(_randomDevice());
+		std::exponential_distribution<double> expoDistro(lambda);
+
+		return( 2.0 + global::currTimeSim + expoDistro(gen) ); //
+
+	}
+
 	bool copiar_archivo_streams(const std::string& ruta_origen, const std::string& ruta_destino) {
 		std::string contenido;
 

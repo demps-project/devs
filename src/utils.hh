@@ -1,5 +1,7 @@
 #pragma once
 
+#include <random>
+#include <globals.hh>
 #include <json.hpp>
 using json=nlohmann::json;
 
@@ -134,6 +136,10 @@ namespace utils{
 	// la estructura 'utils::simulationsData'
 	typedef std::map<utils::dtwDistance_t, utils::simulationsData> simsComparisonMap_t;
 	
+	
+
+	double exponentialTime(double lambda);
+
 	bool copiar_archivo_streams(const std::string& ruta_origen, const std::string& ruta_destino);
 	std::string obtenerCampo(const std::string& texto, char delimitador, size_t indice);
 	

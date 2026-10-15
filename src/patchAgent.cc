@@ -104,6 +104,44 @@ std::vector<uint32_t>& PatchAgent::getAgents()
 	return(_agentsInPatch);
 }
 
+void PatchAgent::addAgentInBuilding(int32_t idAgent){
+	_agentsInBuilding.push_back(idAgent);
+
+}
+
+void PatchAgent::delAgentInBuilding(const uint32_t &idAgent)
+{
+
+	//
+	// Buscar identificador del agente en el patch y eliminarlo
+	// de la lista _agentsInPatch
+	//
+	//*global::serverLog  << "idAgentDeleted:" << idAgent << std::endl;
+	std::lock_guard<std::mutex> l(_mtx);
+	/*for (auto it = _agentsInBuilding.begin(); it != _agentsInBuilding.end();) {
+		if (*it == idAgent) {
+			it = _agentsInBuilding.erase(it);
+			*global::serverLog  << "idAgentDeleted:" << idAgent << " OK "<< std::endl;
+			break;
+		} else {
+			++it;
+		}
+	}*/
+	auto it = std::find(_agentsInBuilding.begin(), _agentsInBuilding.end(), idAgent);
+    if (it == _agentsInBuilding.end()) {
+        return; // No encontrado
+    }
+
+    // Sobrescribe el elemento encontrado con el último y descarta el final
+    *it = _agentsInBuilding.back();
+    _agentsInBuilding.pop_back();
+
+}
+
+std::vector<uint32_t>& PatchAgent::getAgentsInBuilding(){
+	return this->_agentsInBuilding;
+}
+
 
 std::vector<uint32_t>& PatchAgent::getNeighborsAgents()
 {	
@@ -538,4 +576,36 @@ void PatchAgent::decBuildingPeopleInside(){
 	}
 }
 
+void PatchAgent::setNextTimeToGo(double lambda){
+	std::lock_guard<std::mutex> l(_mtx);
 
+	this->_nextTimeToGo = utils::exponentialTime(lambda);
+	// Seleccionar uno de los agentes del vector _agentsInBuilding
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<std::size_t> dist(0, _agentsInBuilding.size() - 1);
+	std::size_t indice = dist(gen);
+
+	uint32_t idAgentSelected = _agentsInBuilding[indice];
+
+	//*global::serverLog  << "idAgentSelected:" << idAgentSelected << std::endl;
+
+	Agent* agentSelected = _myEnv->getAgent(idAgentSelected);
+	if(agentSelected->inBuilding()){
+		agentSelected->responseTime(this->_nextTimeToGo);
+		//*global::serverLog  << "idAgentSelected:" << idAgentSelected << " #####" << this->_nextTimeToGo << std::endl;
+	}
+	
+}
+
+double PatchAgent::getNextTimeToGo(){
+	return this->_nextTimeToGo;
+}
+
+void PatchAgent::checkTimeToGo(double lambda){
+	if( global::currTimeSim*global::params.deltaT >= this->getNextTimeToGo() ){
+
+		this->setNextTimeToGo(lambda);
+
+	}
+}

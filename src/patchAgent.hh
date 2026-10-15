@@ -1,7 +1,9 @@
 #pragma once
 
 #include <mutex>
+#include <random>
 #include <json.hpp>
+#include <LogHandler.hpp>
 using json=nlohmann::json;
 
 #include <globals.hh>
@@ -32,6 +34,7 @@ private:
 
 	std::vector<uint32_t> _agentsInPatch;
 	std::vector<uint32_t> _neighborsAgents; //NEW
+	std::vector<uint32_t> _agentsInBuilding;
 	
 	Zone* _myZone;
 	
@@ -90,6 +93,7 @@ private:
 	bool _isBuilding = false;
 	uint32_t _buildingCapacity = 0;
 	uint32_t _buildingPeopleInside = 0;
+	double   _nextTimeToGo = 0;
 	
 
 public:
@@ -104,6 +108,10 @@ public:
 	void addAgent(const uint32_t &idAgent);
 	void delAgent(const uint32_t &idAgent);
 	std::vector<uint32_t>& getAgents();
+
+	void addAgentInBuilding(int32_t idAgent);
+	void delAgentInBuilding(const uint32_t &idAgent);
+	std::vector<uint32_t>& getAgentsInBuilding();
 	
 	std::vector<uint32_t>& getNeighborsAgents();
 	idPatchNeighbors findPatchNeighbors4();
@@ -152,4 +160,7 @@ public:
 	void setBuildingPeopleInside(uint32_t c);
 	uint32_t getBuildingPeopleInside();
 	void decBuildingPeopleInside();
+	void setNextTimeToGo(double lambda);
+	double getNextTimeToGo();
+	void checkTimeToGo(double lambda);
 };

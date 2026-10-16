@@ -127,6 +127,8 @@ namespace global{
 	 *
 	 *		global::params.elevationServer.URL
 	 *		global::params.elevationServer.coorTest
+	 *		
+	 *		global::params.buildings.rateEvacution
 	 */
 	struct Params_s {
 		float deltaT;              
@@ -175,6 +177,10 @@ namespace global{
 			std::string URL      = "http://oes:10666";
 			std::string coorTest = "-33.144995,-71.568655";
 		} elevationServer;
+
+		struct Building_s {
+			double rateEvacuation = 0.5;
+		} buildings;
 	};
     extern Params_s params;
 }

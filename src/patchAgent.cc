@@ -546,6 +546,13 @@ double PatchAgent::getMaxLevelFlood()
 	return(_maxLevelFlood);
 }
 
+
+/*************************************************
+ * Métodos relacionados cuando el patchAgent tiene
+ * asociado un edificio
+ * 
+ */
+
 void PatchAgent::isBuilding(bool b){
 	this->_isBuilding = b;
 }
@@ -565,6 +572,7 @@ uint32_t PatchAgent::getBuildingCapacity(){
 void PatchAgent::setBuildingPeopleInside(uint32_t c){
 	this->_buildingPeopleInside = c;
 }
+
 uint32_t PatchAgent::getBuildingPeopleInside(){
 	return this->_buildingPeopleInside;
 }
@@ -574,6 +582,31 @@ void PatchAgent::decBuildingPeopleInside(){
 		#pragma omp atomic
 		this->_buildingPeopleInside -= 1;
 	}
+}
+
+void PatchAgent::updateResponseTimeAgentsInBuilding(double lambda){
+	std::vector<uint32_t> agentsOK;
+	// Recorrer el vector _agentsInBuilding y seleccionar sólo
+	// los que siguen dentro (inBuilding() es true)
+	for(const auto& idAgent : _agentsInBuilding){
+		Agent* currentAgent = _myEnv->getAgent(idAgent);
+		if(currentAgent->inBuilding()){
+			agentsOK.push_back(currentAgent->id());
+		}
+	}
+	// En el vector agentsOK están los que siguen al interior
+	// del edificio
+	static thread_local std::mt19937 gen(std::random_device{}());
+    std::shuffle(agentsOK.begin(), agentsOK.end(), gen);
+
+	std::vector<double> expoTimes = utils::generateExponentialSequence(agentsOK.size(), 1.5 + global::currTimeSim, lambda);
+	for(uint32_t idx = 0; idx < agentsOK.size(); idx++ ){
+		uint32_t idAgent = agentsOK[idx];
+		double newResponseTime = expoTimes[idx];
+		Agent* currentAgent = _myEnv->getAgent(idAgent);
+		currentAgent->responseTime(newResponseTime);
+	}	
+
 }
 
 void PatchAgent::setNextTimeToGo(double lambda){

@@ -160,6 +160,7 @@ public:
 	void setBuildingPeopleInside(uint32_t c);
 	uint32_t getBuildingPeopleInside();
 	void decBuildingPeopleInside();
+	void updateResponseTimeAgentsInBuilding(double lambda);
 	void setNextTimeToGo(double lambda);
 	double getNextTimeToGo();
 	void checkTimeToGo(double lambda);

@@ -28,6 +28,23 @@ namespace utils{
 
 	}
 
+	std::vector<double> generateExponentialSequence(std::size_t n, double nextEventTime, double lambda) {
+		std::vector<double> sequence;
+		sequence.reserve(n); // Reserva memoria contigua para evitar realocaciones
+
+		// Motor PRNG estático/persistente por hilo: evita recrear la tabla de 624 palabras
+		static thread_local std::mt19937 gen(std::random_device{}());
+		std::exponential_distribution<double> expoDistro(lambda);
+
+		for (std::size_t i = 0; i < n; ++i) {
+			// En un proceso de Poisson, cada nuevo instante es el tiempo acumulado + delta_t
+			nextEventTime += expoDistro(gen);
+			sequence.push_back(nextEventTime);
+		}
+
+		return sequence;
+	}
+
 	bool copiar_archivo_streams(const std::string& ruta_origen, const std::string& ruta_destino) {
 		std::string contenido;
 

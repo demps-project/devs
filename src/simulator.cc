@@ -403,13 +403,15 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 
 		for(auto &fooZone : _env->getBuildingZones()) {
 			*global::serverLog << std::setprecision(_filesimPrecision);
-			*global::serverLog << "ZONA " << fooZone.getNameID() << "\n" ;
+			*global::serverLog << "Building " << fooZone.getNameID() << "\n" ;
 			*global::serverLog << "\t\tArea: " <<fooZone.getArea() << "\n" ;
 			*global::serverLog << "\t\tcentroidWGS84:" << fooZone.getCentroidWGS84() << "\n";
 			*global::serverLog << "\t\tXYminWGS84:" << fooZone.getXYminWGS84() << "\n";
 			*global::serverLog << "\t\tXYmaxWGS84:" << fooZone.getXYmaxWGS84() << "\n";
 			*global::serverLog << "\t\tcentroid:" << fooZone.getCentroid() <<  "\n";
+			*global::serverLog << "\t\tevacuationRate:" << global::params.buildings.rateEvacuation  <<  "\n";
 
+		
 			uint32_t idPatch =  fooZone.getPatchAgentCentroid(); //_env->getQuadId(fooZone.getCentroid());
 			PatchAgent* pAgent = _env->getPatchAgent(idPatch);
 			
@@ -854,6 +856,14 @@ void Simulator::run()
 	
 	timerSimAprox.start();
 	//std::cout << "Simulando... tick>0" << std::endl;
+
+	for(auto &fooZone : _env->getBuildingZones()) {
+		uint32_t idPatchAgentCentroid = fooZone.getPatchAgentCentroid();
+		PatchAgent* pAgent = _env->getPatchAgent(idPatchAgentCentroid);
+		double lambda = global::params.buildings.rateEvacuation;
+		pAgent->updateResponseTimeAgentsInBuilding(lambda);
+	}
+
 	for(global::currTimeSim = 1; global::currTimeSim <= _duration; global::currTimeSim++) {
 
 		if(global::currTimeSim % _interval == 0){
@@ -923,14 +933,6 @@ void Simulator::run()
 				this->saveStateFlood();
 			}
 		}
-
-		for(auto &fooZone : _env->getBuildingZones()) {
-			uint32_t idPatchAgentCentroid = fooZone.getPatchAgentCentroid();
-			PatchAgent* pAgent = _env->getPatchAgent(idPatchAgentCentroid);
-			double lambda = 200;
-			pAgent->checkTimeToGo(lambda);
-		}
-		
 		
 		if( (global::currTimeSim % global::params.sampling.interval) == 0 && global::params.sampling.compareWithOthersSims){
 			this->samplingSim();

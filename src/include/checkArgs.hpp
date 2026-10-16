@@ -12,9 +12,9 @@ private:
 	// 1) Modificar esta sección
 	//const std::string optString = "c:d:D:e:f:p:P:b:B:v:V:n:N:t:T:o:s:hE";
 	//const std::string optString = "c:d:D:e:f:p:P:b:B:v:n:N:t:T:o:s:hE";
-	const std::string optString = "c:d:D:e:f:p:P:b:B:v:n:N:t:T:o:s:hm";
+	const std::string optString = "c:d:D:e:f:p:P:l:b:B:v:n:N:t:T:o:s:hm";
 	
-	const struct option optStringLong[19] = {
+	const struct option optStringLong[20] = {
 		{"makeconfig"  , no_argument      , nullptr, 'm'},
 		{"config"      , required_argument, nullptr, 'c'},
 		{"densitymodel", required_argument, nullptr, 'd'},
@@ -23,6 +23,7 @@ private:
 		{"floodmodel"  , required_argument, nullptr, 'f'},
 		{"panicmodel"  , required_argument, nullptr, 'p'},
 		{"emotionthreshold", required_argument, nullptr, 'P'},
+		{"evacuationRateBuildings" , required_argument, nullptr, 'l'},
 		{"debrismodel" , required_argument, nullptr, 'b'},
 		{"debrisratio" , required_argument, nullptr, 'B'},
 		{"elevationmodel", required_argument, nullptr, 'v'},
@@ -43,26 +44,27 @@ private:
 	const std::string description = "DESCRIPTION:\n" "\tDEMPS simulator.";
 
 	const std::string options  = "OPTIONS:\n"
-	                                 "\t-c, --config            config file (JSON).\n"
-									 "\t-t, --threads           threads to use.\n"
-	                                 "\t-T, --timesim           total simulation time.\n"
-									 "\t-s, --samplinglevel     sampling level 0..1\n"
-									 "\t-o, --outdir            output directory (overwrite config file).\n"
-									 "\t-n, --residents         number of residents agents.\n"
-									 "\t-N, --visitors          number of visitors agents.\n"
-									 "\t-D, --description       simulation description, e.g: --description \"test city\".\n"										 
-									 "\t-d, --densitymodel      enable density model (1:true, 0:false, -1:config).\n"
-									 "\t-p, --panicmodel        enable panic model (1:true, 0:false, -1:config).\n"
-									 "\t-P, --emotionthreshold  emotion threshlod for enter to panic state.\n"
-									 "\t-f, --floodmodel        enable flood model (1:true, 0:false, -1:config).\n"			 
-									 "\t-b, --debrismodel       enable debris model (1:true, 0:false, -1:config).\n"
-									 "\t-B, --debrisratio       ratio of patchs with debris (1..100)%.\n"
-									 "\t-v, --elevationmodel    enable elevation model (1:true, 0:false, -1:config).\n"
+	                                 "\t-c, --config                      config file (JSON).\n"
+									 "\t-t, --threads                     threads to use.\n"
+	                                 "\t-T, --timesim                     total simulation time.\n"
+									 "\t-s, --samplinglevel               sampling level 0..1\n"
+									 "\t-o, --outdir                      output directory (overwrite config file).\n"
+									 "\t-n, --residents                   number of residents agents.\n"
+									 "\t-N, --visitors                    number of visitors agents.\n"
+									 "\t-D, --description                 simulation description, e.g: --description \"test city\".\n"										 
+									 "\t-d, --densitymodel                enable density model (1:true, 0:false, -1:config).\n"
+									 "\t-p, --panicmodel                  enable panic model (1:true, 0:false, -1:config).\n"
+									 "\t-P, --emotionthreshold            emotion threshlod for enter to panic state.\n"
+									 "\t-l, --evacuationRateBuildings     evacuacuation rate from buildings.\n"
+									 "\t-f, --floodmodel                  enable flood model (1:true, 0:false, -1:config).\n"			 
+									 "\t-b, --debrismodel                 enable debris model (1:true, 0:false, -1:config).\n"
+									 "\t-B, --debrisratio                 ratio of patchs with debris (1..100)%.\n"
+									 "\t-v, --elevationmodel              enable elevation model (1:true, 0:false, -1:config).\n"
 									 //"\t-V, --elevationfile     file with data elevation. Default: 'elevationPatchData.txt'.\n"
 									 //"\t-E, --patchcoords       save in file 'elevationPatch-<city>.txt the coords (lat,lon) of each patch and end.\n"
-									 "\t-e, --experiment        experiment number.\n"							 
-	                                 "\t-h, --help              show this help and end.\n"
-									 "\t-m, --makeconfig        create default config file.\n";
+									 "\t-e, --experiment                  experiment number.\n"							 
+	                                 "\t-h, --help                        show this help and end.\n"
+									 "\t-m, --makeconfig                  create default config file.\n";
  
 	typedef struct args_t {
 		std::string fileConfig;
@@ -74,6 +76,7 @@ private:
 		int32_t densityModel;
 		int32_t debrisModel;
 		int32_t debrisRatio;
+		double  evacuationRateBuildings;
 		int32_t elevationModel;
 		//std::string elevationFile;
 		std::string description;
@@ -119,6 +122,7 @@ CheckArgs::CheckArgs(int _argc, char **_argv)
 	parametros.densityModel = -1;
 	parametros.debrisModel  = -1;
 	parametros.debrisRatio  = 1;
+	parametros.evacuationRateBuildings       = -1.0;
 	parametros.elevationModel = -1;
 	//parametros.elevationFile = "elevationPatchData.txt";
 	parametros.description  = "";
@@ -164,6 +168,9 @@ void CheckArgs::loadArgs()
 			break;
 		case 'P':
 			parametros.emotionThreshold = std::atoi(optarg);
+			break;
+		case 'l':
+			parametros.evacuationRateBuildings = std::atof(optarg);
 			break;
 		case 'b':
 			parametros.debrisModel = std::atoi(optarg);

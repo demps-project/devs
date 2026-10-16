@@ -77,6 +77,9 @@ void makeDefaultConfigFile(){
 	buff << "[params.elevationServer]\n";
 	buff << "URL=http://oes:10666/api/v1\n";
 	buff << "coorTest=-33.144995,-71.568655\n";
+	buff << "\n";
+	buff << "[params.buildings]\n";
+	buff << "rateEvacuation=0.5\n";
 
 	std::ofstream ofs;
 
@@ -154,6 +157,7 @@ int main(int argc,char** argv)
 		global::params.snitchServer.cutoffHMap        = dempsConfig.Get<uint32_t>("params.snitchServer","cutoffHMap");
 		global::params.elevationServer.URL            = dempsConfig.Get<std::string>("params.elevationServer","URL");
 		global::params.elevationServer.coorTest       = dempsConfig.Get<std::string>("params.elevationServer","coorTest");
+		global::params.buildings.rateEvacuation       = dempsConfig.Get<double>("params.buildings","rateEvacuation");
 	}
 	catch(std::exception& e){
 		*global::serverLog << "Error in get action from file '" << configFilePath << "'\n";
@@ -200,6 +204,11 @@ int main(int argc,char** argv)
 	int32_t numExperiment       = argumentos->getArgs().numExperiment ;
 	double samplingLevel        = argumentos->getArgs().samplingLevel ;
 	//bool patchCoords            = argumentos->getArgs().patchCoords ;
+
+	if(argumentos->getArgs().evacuationRateBuildings > 0){
+		global::params.buildings.rateEvacuation = argumentos->getArgs().evacuationRateBuildings;
+	}
+	
 	
 
 	// Falta colocar este campo en el archivo de configuración y en el formulario web

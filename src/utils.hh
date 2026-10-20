@@ -139,7 +139,7 @@ namespace utils{
 	
 
 	double exponentialTime(double lambda);
-	std::vector<double> generateExponentialSequence(std::size_t n, double nextEventTime, double lambda) ;
+	std::vector<double> generateExponentialSequence(std::size_t n, double nextEventTime, double lambda, double agentOutsideBuilding = 0) ;
 
 	bool copiar_archivo_streams(const std::string& ruta_origen, const std::string& ruta_destino);
 	std::string obtenerCampo(const std::string& texto, char delimitador, size_t indice);

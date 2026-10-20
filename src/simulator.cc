@@ -915,6 +915,13 @@ void Simulator::run()
 
 		if(_statsOut && ((global::currTimeSim % _statsInterval) == 0)) {
 			_env->updateLogsStats();
+
+			for(auto &fooZone : _env->getBuildingZones()) {
+				uint32_t idPatchAgentCentroid = fooZone.getPatchAgentCentroid();
+				PatchAgent* pAgent = _env->getPatchAgent(idPatchAgentCentroid);
+				double lambda = global::params.buildings.rateEvacuation;
+				pAgent->updateResponseTimeAgentsInBuilding(lambda);
+			}
 		}
 		
 		if(_heatMapOut && ((global::currTimeSim % _heatMapInterval) == 0)){

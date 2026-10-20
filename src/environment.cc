@@ -1716,8 +1716,9 @@ void Environment::updateLogsStats()
 
 	std::string logString;
 	
-	////////////////////////////////////////////
+	////////////////////////////////////////////////////
 	// Registro de personas dentro de zonas y edificios
+	//
 	logString = std::to_string(global::currTimeSim*global::params.deltaT);
 	
 	for(auto& reference_zone : this->getReferenceZones() ) {	
@@ -1727,8 +1728,8 @@ void Environment::updateLogsStats()
 	}
 
 	for(auto& building_zone : this->getBuildingZones() ){
-		uint32_t idPatch = this->getQuadId(building_zone.getCentroid());
-		PatchAgent* pAgent = this->getPatchAgent(idPatch);
+		uint32_t idPatchAgentCentroid = building_zone.getPatchAgentCentroid();
+		PatchAgent* pAgent = this->getPatchAgent(idPatchAgentCentroid);
 		std::vector<uint32_t> listAgents = pAgent->getNeighborsAgents();
 		uint32_t totalAgentsInPatch = listAgents.size();
 

@@ -586,6 +586,16 @@ void PatchAgent::decBuildingPeopleInside(){
 
 void PatchAgent::updateResponseTimeAgentsInBuilding(double lambda){
 	std::vector<uint32_t> agentsOK;
+
+	// Cantidad de agentes en los patch vecinos
+	std::vector<uint32_t> listAgents = this->getNeighborsAgents();
+	uint32_t totalAgentsInPatch = listAgents.size();
+
+	// Cantidad de agentes que ha dejado el edificio
+	//uint32_t totalAgentsInBuilding = this->getBuildingPeopleInside();
+	//uint32_t AgentsLeftBuilding = this->getBuildingCapacity() - totalAgentsInBuilding;
+
+
 	// Recorrer el vector _agentsInBuilding y seleccionar sólo
 	// los que siguen dentro (inBuilding() es true)
 	for(const auto& idAgent : _agentsInBuilding){
@@ -599,7 +609,8 @@ void PatchAgent::updateResponseTimeAgentsInBuilding(double lambda){
 	static thread_local std::mt19937 gen(std::random_device{}());
     std::shuffle(agentsOK.begin(), agentsOK.end(), gen);
 
-	std::vector<double> expoTimes = utils::generateExponentialSequence(agentsOK.size(), 1.5 + global::currTimeSim, lambda);
+	std::vector<double> expoTimes = utils::generateExponentialSequence(agentsOK.size(), 1.5 + global::currTimeSim, lambda, totalAgentsInPatch);
+	
 	for(uint32_t idx = 0; idx < agentsOK.size(); idx++ ){
 		uint32_t idAgent = agentsOK[idx];
 		double newResponseTime = expoTimes[idx];

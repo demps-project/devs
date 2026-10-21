@@ -416,7 +416,8 @@ Simulator::Simulator(const json &fsettings, const json& fzones, const std::strin
 			PatchAgent* pAgent = _env->getPatchAgent(idPatch);
 			
 			*global::serverLog << "\t\tPatchAgent:" << idPatch <<  "\n";
-			*global::serverLog << "\t\t\tisBuilding:" << pAgent->isBuilding() << "\n";
+			*global::serverLog << "\t\t\tisBuilding   :" << pAgent->isBuilding() << "\n";
+			*global::serverLog << "\t\t\tname         :" << pAgent->getBuildingName() << "\n";
 			*global::serverLog << "\t\t\tcapacity     :" << pAgent->getBuildingCapacity() << "\n";
 			*global::serverLog << "\t\t\tpeople inside:" << pAgent->getBuildingPeopleInside() <<  std::endl;
 
@@ -919,8 +920,14 @@ void Simulator::run()
 			for(auto &fooZone : _env->getBuildingZones()) {
 				uint32_t idPatchAgentCentroid = fooZone.getPatchAgentCentroid();
 				PatchAgent* pAgent = _env->getPatchAgent(idPatchAgentCentroid);
-				double lambda = global::params.buildings.rateEvacuation;
-				pAgent->updateResponseTimeAgentsInBuilding(lambda);
+				
+				// caso lambda constante
+				//double lambda = global::params.buildings.rateEvacuation;
+				//pAgent->updateResponseTimeAgentsInBuilding(lambda);
+
+				// caso lambda consultado al oraculo
+				pAgent->updateResponseTimeAgentsInBuilding();
+				
 			}
 		}
 		

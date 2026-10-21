@@ -91,9 +91,12 @@ private:
 
 	// Caso patch puede ser un edificio
 	bool _isBuilding = false;
+	std::string _buildingName = "";
 	uint32_t _buildingCapacity = 0;
 	uint32_t _buildingPeopleInside = 0;
 	double   _nextTimeToGo = 0;
+	double   _lambdaCurrent = 0.0;
+	double   _lambdaPredict = 0.0;
 	
 
 public:
@@ -154,13 +157,20 @@ public:
 	void isBuilding(bool b);
 	bool isBuilding();
 
+	void setBuildingName(std::string n);
+	std::string getBuildingName();
+
 	void setBuildingCapacity(uint32_t c);
 	uint32_t getBuildingCapacity();
 
 	void setBuildingPeopleInside(uint32_t c);
 	uint32_t getBuildingPeopleInside();
 	void decBuildingPeopleInside();
+
 	void updateResponseTimeAgentsInBuilding(double lambda);
+	void updateResponseTimeAgentsInBuilding();
+
+
 	void setNextTimeToGo(double lambda);
 	double getNextTimeToGo();
 	void checkTimeToGo(double lambda);

@@ -61,6 +61,8 @@ PatchAgent::PatchAgent(const uint32_t &id)
 		_myEnv->addPatchAgentInCity(this);
 	}
 
+	_lambdaCurrent = global::params.buildings.rateEvacuation;
+	_lambdaPredict = 0.0;
 	
 }
 
@@ -561,6 +563,14 @@ bool PatchAgent::isBuilding(){
 	return this->_isBuilding;
 }
 
+void PatchAgent::setBuildingName(std::string n){
+	this->_buildingName = n;
+}
+
+std::string PatchAgent::getBuildingName(){
+	return this->_buildingName;
+}
+
 void PatchAgent::setBuildingCapacity(uint32_t c){
 	this->_buildingCapacity = c;
 }
@@ -584,16 +594,92 @@ void PatchAgent::decBuildingPeopleInside(){
 	}
 }
 
+void PatchAgent::updateResponseTimeAgentsInBuilding(){
+	
+	uint32_t ocupacionInicial;
+	uint32_t agentesQueHanSalido;
+	uint32_t tiempoRespuesta;
+	uint32_t personasZonaSalida; 
+	uint32_t personasInterior;
+	uint32_t numeroPisos;
+	uint32_t ocupantesPanicoInicial;
+	uint32_t nroEscaleras;
+	uint32_t anchoSalida;
+	uint32_t anchoPasillos;
+	uint32_t anchoEscaleras;
+	uint32_t anchoEdificio;
+
+
+	ocupacionInicial       = getBuildingCapacity();
+	agentesQueHanSalido    = this->getBuildingCapacity() - this->getBuildingPeopleInside();
+	tiempoRespuesta        = 60;
+	personasZonaSalida     = this->getNeighborsAgents().size();
+	personasInterior       = this->getBuildingPeopleInside();
+	ocupantesPanicoInicial = 0;
+
+	if(this->getBuildingName() == "Edificio1"){
+		numeroPisos    = 15;
+		nroEscaleras   = 1;
+		anchoSalida    = 3;
+		anchoPasillos  = 3;
+		anchoEscaleras = 3;
+		anchoEdificio  = 50;
+	}
+	else if(this->getBuildingName() == "Edificio2"){
+		numeroPisos    = 4;
+		nroEscaleras   = 2;
+		anchoSalida    = 7;
+		anchoPasillos  = 6;
+		anchoEscaleras = 4;
+		anchoEdificio  = 70;
+	}
+
+	std::string oraculoServerURL = "http://oraculo:10800";
+	json response;
+	std::string options;
+
+	options  = "data={\"cases\":[[";
+	options += std::to_string(ocupacionInicial) + ",";
+	options += std::to_string(agentesQueHanSalido) + ",";
+	options += std::to_string(tiempoRespuesta) + ",";
+	options += std::to_string(personasZonaSalida) + ",";
+	options += std::to_string(personasInterior) + ",";
+	options += std::to_string(numeroPisos) + ",";
+	options += std::to_string(ocupantesPanicoInicial) + ",";
+	options += std::to_string(nroEscaleras) + ",";
+	options += std::to_string(anchoSalida) + ",";
+	options += std::to_string(anchoPasillos) + ",";
+	options += std::to_string(anchoEscaleras) + ",";
+	options += std::to_string(anchoEdificio) + ",";
+	options += std::to_string(_lambdaCurrent);
+	options += "]]}";
+
+	std::string queryURL = oraculoServerURL + "/predict?" + options;
+	//*global::serverLog << this->getBuildingName() << ": queryURL: " << queryURL << "\n";
+	try{
+		utils::restClient_get(queryURL, response);
+	} catch(std::exception& e){
+		//std::cerr << e.what() <<std::endl;
+		*global::serverLog   << "Could not connect to oraculo server " << oraculoServerURL << std::endl;
+		_lambdaPredict = _lambdaCurrent;
+	}
+
+	// lambda se calcula en base a una consulta al oráculo con argumentos
+	_lambdaPredict = response[0].get<double>();
+	*global::serverLog << this->getBuildingName() << ": lambda predict: " << _lambdaPredict << std::endl;
+
+	
+
+	this->updateResponseTimeAgentsInBuilding(_lambdaPredict);
+
+	_lambdaCurrent = _lambdaPredict;
+
+}
+
 void PatchAgent::updateResponseTimeAgentsInBuilding(double lambda){
 	std::vector<uint32_t> agentsOK;
 
-	// Cantidad de agentes en los patch vecinos
-	std::vector<uint32_t> listAgents = this->getNeighborsAgents();
-	uint32_t totalAgentsInPatch = listAgents.size();
-
-	// Cantidad de agentes que ha dejado el edificio
-	//uint32_t totalAgentsInBuilding = this->getBuildingPeopleInside();
-	//uint32_t AgentsLeftBuilding = this->getBuildingCapacity() - totalAgentsInBuilding;
+	
 
 
 	// Recorrer el vector _agentsInBuilding y seleccionar sólo
@@ -609,8 +695,8 @@ void PatchAgent::updateResponseTimeAgentsInBuilding(double lambda){
 	static thread_local std::mt19937 gen(std::random_device{}());
     std::shuffle(agentsOK.begin(), agentsOK.end(), gen);
 
-	std::vector<double> expoTimes = utils::generateExponentialSequence(agentsOK.size(), 1.5 + global::currTimeSim, lambda, totalAgentsInPatch);
-	
+	std::vector<double> expoTimes = utils::generateExponentialSequence(agentsOK.size(), 1.5 + global::currTimeSim, lambda);
+
 	for(uint32_t idx = 0; idx < agentsOK.size(); idx++ ){
 		uint32_t idAgent = agentsOK[idx];
 		double newResponseTime = expoTimes[idx];

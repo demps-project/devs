@@ -309,6 +309,7 @@ void Environment::addBuildZone(const json& buildZone_feature){
 
 	PatchAgent* pAgent = this->getPatchAgent(idPatch);
 	pAgent->isBuilding(true);
+	pAgent->setBuildingName( utils::obtenerCampo(zoneNameID, '-', 0) );
 	pAgent->setBuildingCapacity(capacityInt);
 	pAgent->setBuildingPeopleInside(capacityInt);
 

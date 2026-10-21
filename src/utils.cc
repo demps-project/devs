@@ -28,7 +28,7 @@ namespace utils{
 
 	}
 
-	std::vector<double> generateExponentialSequence(std::size_t n, double nextEventTime, double lambda, double agentOutsideBuilding) {
+	std::vector<double> generateExponentialSequence(std::size_t n, double nextEventTime, double lambda) {
 		std::vector<double> sequence;
 		sequence.reserve(n); // Reserva memoria contigua para evitar realocaciones
 
